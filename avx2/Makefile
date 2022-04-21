@@ -8,8 +8,14 @@ SOURCES = sign.c packing.c polyvec.c poly.c ntt.S invntt.S pointwise.S \
   shuffle.S consts.c rejsample.c rounding.c
 HEADERS = align.h config.h params.h api.h sign.h packing.h polyvec.h poly.h ntt.h \
   consts.h shuffle.inc rejsample.h rounding.h symmetric.h randombytes.h
+DEMO_SOURCES = demo/demo_sign.c packing.c polyvec.c poly.c ntt.S invntt.S pointwise.S \
+  shuffle.S consts.c rejsample.c rounding.c
+DEMO_HEADERS = align.h config.h params.h api.h demo/demo_sign.h packing.h polyvec.h poly.h \
+	ntt.h consts.h shuffle.inc rejsample.h rounding.h symmetric.h randombytes.h
 KECCAK_SOURCES = $(SOURCES) fips202.c fips202x4.c f1600x4.S symmetric-shake.c
 KECCAK_HEADERS = $(HEADERS) fips202.h fips202x4.h
+DEMO_KECCAK_SOURCES = $(DEMO_SOURCES) fips202.c fips202x4.c f1600x4.S symmetric-shake.c
+DEMO_KECCAK_HEADERS = $(DEMO_HEADERS) fips202.h fips202x4.h
 AES_SOURCES = $(SOURCES) fips202.c aes256ctr.c
 AES_HEADERS = $(HEADERS) fips202.h aes256ctr.h
 
@@ -30,6 +36,9 @@ all: \
   test/test_vectors5aes \
   speed
 
+demo: \
+	demo/demo_dilithium2
+
 speed: \
   test/test_speed2 \
   test/test_speed3 \
@@ -48,6 +57,11 @@ shared: \
   libpqcrystals_fips202_avx2.so \
   libpqcrystals_fips202x4_avx2.so \
   libpqcrystals_aes256ctr_avx2.so
+
+demo/demo_dilithium2: demo/demo_dilithium.c randombytes.c $(DEMO_KECCAK_SOURCES) \
+  $(DEMO_KECCAK_HEADERS)
+	$(CC) $(CFLAGS) -DDILITHIUM_MODE=2 \
+	  -o $@ $< randombytes.c $(DEMO_KECCAK_SOURCES)
 
 libpqcrystals_fips202_avx2.so: fips202.c fips202.h
 	$(CC) -shared -fPIC $(CFLAGS) -o $@ $<
@@ -211,6 +225,7 @@ PQCgenKAT_sign5aes: PQCgenKAT_sign.c rng.c rng.h $(AES_SOURCES) $(AES_HEADERS)
 
 clean:
 	rm -f *.o *.a *.so
+	rm -f demo/demo_dilithium2
 	rm -f test/test_dilithium2
 	rm -f test/test_dilithium3
 	rm -f test/test_dilithium5
