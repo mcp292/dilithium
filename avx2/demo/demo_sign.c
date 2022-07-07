@@ -84,7 +84,9 @@ int demo_crypto_sign_keypair(uint8_t *random_bytes, uint8_t *pk, uint8_t *sk) {
   poly t1, t0;
 
   /* Use randomness passed in */
-  rho = random_bytes;
+  memcpy(seedbuf, random_bytes, SEEDBYTES);
+  shake256(seedbuf, 2*SEEDBYTES + CRHBYTES, seedbuf, SEEDBYTES);
+  rho = seedbuf;
   rhoprime = rho + SEEDBYTES;
   key = rhoprime + CRHBYTES;
 
