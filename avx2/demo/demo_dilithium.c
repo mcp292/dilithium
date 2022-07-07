@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
     uint8_t pk[CRYPTO_PUBLICKEYBYTES];
     uint8_t sk[CRYPTO_SECRETKEYBYTES];
     uint8_t random_bytes[SEEDBYTES]; /* 256 */
+    uint8_t rb[SEEDBYTES];
 
     /* take message from cmd */
     /* convert to bytes? */
@@ -100,7 +101,8 @@ int main(int argc, char *argv[])
     /* pass random puf data to function from cmd */
 
     /* generate keypairs, sign, verify */
-    demo_crypto_sign_keypair(random_bytes, pk, sk);
+    /* demo_crypto_sign_keypair(random_bytes, pk, sk); */
+    orig_crypto_sign_keypair(rb, pk, sk);
     crypto_sign(sm, &smlen, m, MLEN, sk);
     ret = crypto_sign_open(m2, &mlen, sm, smlen, pk);
 
@@ -129,6 +131,9 @@ int main(int argc, char *argv[])
     printf("Public key bytes: %d\n", CRYPTO_PUBLICKEYBYTES);
     printf("Secret key bytes: %d\n", CRYPTO_SECRETKEYBYTES);
     printf("Crypto bytes: %d\n", CRYPTO_BYTES);
+
+    printf("\nRB:\n");
+    print_bytes_hex(rb, SEEDBYTES);
 
     printf("\nPublic key:\n");
     print_bytes_hex(pk, CRYPTO_PUBLICKEYBYTES);
