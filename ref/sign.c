@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include "params.h"
 #include "sign.h"
 #include "packing.h"
@@ -7,6 +8,19 @@
 #include "randombytes.h"
 #include "symmetric.h"
 #include "fips202.h"
+
+/** \brief Displays byte array in hex form. */
+void print_bytes_hex(uint8_t bytes[], int size);
+void print_bytes_hex(uint8_t bytes[], int size)
+{
+    int ind;
+
+    for (ind = 0; ind < size; ind++)
+    {
+        printf("%.2x", bytes[ind]);
+    }
+    printf("\n");
+}
 
 /*************************************************
 * Name:        crypto_sign_keypair
@@ -30,10 +44,24 @@ int crypto_sign_keypair(uint8_t *pk, uint8_t *sk) {
 
   /* Get randomness for rho, rhoprime and key */
   randombytes(seedbuf, SEEDBYTES);
+  printf("seedbuf:\n");
+  print_bytes_hex(seedbuf, SEEDBYTES);
+
   shake256(seedbuf, 2*SEEDBYTES + CRHBYTES, seedbuf, SEEDBYTES);
+  printf("\nseedbuf after shake:\n");
+  print_bytes_hex(seedbuf, 2*SEEDBYTES + CRHBYTES);
+
   rho = seedbuf;
+  printf("\nrho:\n");
+  print_bytes_hex(rho, 2*SEEDBYTES + CRHBYTES);
+
   rhoprime = rho + SEEDBYTES;
+  printf("\nrhoprime:\n");
+  print_bytes_hex(rhoprime, 2*SEEDBYTES + CRHBYTES);
+
   key = rhoprime + CRHBYTES;
+  printf("\nkey:\n");
+  print_bytes_hex(key, 2*SEEDBYTES + CRHBYTES);
 
   /* Expand matrix */
   polyvec_matrix_expand(mat, rho);
@@ -60,6 +88,12 @@ int crypto_sign_keypair(uint8_t *pk, uint8_t *sk) {
   /* Compute H(rho, t1) and write secret key */
   shake256(tr, SEEDBYTES, pk, CRYPTO_PUBLICKEYBYTES);
   pack_sk(sk, rho, tr, key, &t0, &s1, &s2);
+
+  printf("\npublic key:\n");
+  print_bytes_hex(pk, CRYPTO_PUBLICKEYBYTES);
+
+  printf("\nsecret key:\n");
+  print_bytes_hex(sk, CRYPTO_SECRETKEYBYTES);
 
   return 0;
 }
