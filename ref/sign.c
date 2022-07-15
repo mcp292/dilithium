@@ -53,15 +53,15 @@ int crypto_sign_keypair(uint8_t *pk, uint8_t *sk) {
 
   rho = seedbuf;
   printf("\nrho:\n");
-  print_bytes_hex(rho, 2*SEEDBYTES + CRHBYTES);
+  print_bytes_hex(rho, SEEDBYTES);
 
   rhoprime = rho + SEEDBYTES;
   printf("\nrhoprime:\n");
-  print_bytes_hex(rhoprime, 2*SEEDBYTES + CRHBYTES);
+  print_bytes_hex(rhoprime, CRHBYTES);
 
   key = rhoprime + CRHBYTES;
   printf("\nkey:\n");
-  print_bytes_hex(key, 2*SEEDBYTES + CRHBYTES);
+  print_bytes_hex(key, SEEDBYTES);
 
   /* Expand matrix */
   polyvec_matrix_expand(mat, rho);
