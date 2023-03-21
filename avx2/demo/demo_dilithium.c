@@ -6,7 +6,6 @@
    elif action == "verify":
      argument_list = ["verify", public_key, message_hash] */
 
-/* TODO: implement this around ref implementation/dir */
 /* TODO: original demo broken after changing commandline arguments */
 
 #include <stddef.h>
@@ -150,7 +149,6 @@ int main(int argc, char *argv[])
     const int PUBLIC_KEY_IND = 2;
     const int MESSAGE_HASH_IND = 3;
 
-    size_t i;
     int ret;
     size_t mlen, smlen;
     char action[ACTION_LEN];
@@ -207,20 +205,20 @@ int main(int argc, char *argv[])
 
         /* dilithium error checks */
         if(ret) {
-            printf("Verification failed\n");
+            printf("Failed\nVerification failed\n");
             return -1;
         }
         if(smlen != MLEN + CRYPTO_BYTES) {
-            printf("Signed message lengths wrong\n");
+            printf("Failed\nSigned message lengths wrong\n");
             return -1;
         }
         if(mlen != MLEN) {
-            printf("Message lengths wrong\n");
+            printf("Failed\nMessage lengths wrong\n");
             return -1;
         }
 
         /* print to cmdline */
-        if (ret == 0) printf("%s\n", m2);
+        if (ret == 0) printf("Verified\n%s\n", m2);
     }
 
     return 0;
